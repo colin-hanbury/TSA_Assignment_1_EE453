@@ -1,5 +1,8 @@
 package registration;
 
+import collegeRegistration.Course;
+import collegeRegistration.Module;
+import collegeRegistration.Student;
 import java.util.ArrayList;
 import org.joda.time.DateTime;
 
@@ -24,18 +27,18 @@ public class Registration {
         
         //create string list for students in each module
         ArrayList<String> studentsEngineering = new ArrayList<>();
-        students.add("John Maher");
-        students.add("Paul Fahy");
+        studentsEngineering.add("John Maher");
+        studentsEngineering.add("Paul Fahy");
         
         ArrayList<String> studentsInfoTech = new ArrayList<>();
-        students.add("James Murphy");
-        students.add("Barry Jones");
+        studentsInfoTech.add("James Murphy");
+        studentsInfoTech.add("Barry Jones");
         
         ArrayList<String> studentsEngIT = new ArrayList<>();
-        students.add("John Maher");
-        students.add("Paul Fahy");
-        students.add("James Murphy");
-        students.add("Barry Jones");
+        studentsEngIT.add("John Maher");
+        studentsEngIT.add("Paul Fahy");
+        studentsEngIT.add("James Murphy");
+        studentsEngIT.add("Barry Jones");
         
         //create string lists for related courses
         ArrayList<String> relatedCourses1 = new ArrayList<>();
@@ -64,42 +67,54 @@ public class Registration {
         //add students to lists
         ArrayList<Student> studentsEng = new ArrayList<>();
         studentsEng.add(john);
-        stuedntsIT.add(paul);
+        studentsEng.add(paul);
         
         ArrayList<Student> studentsIT = new ArrayList<>();
         studentsIT.add(james);
         studentsIT.add(barry);
         
         //add modules to lists
-        ArrayList<Module> moduleEngineering = new ArrayList<>();
-        moduleEngineering.add(coding);
-        moduleEngineering.add(maths);
-        moduleEngineering.add(hardware);
+        ArrayList<Module> modulesEngineering = new ArrayList<>();
+        modulesEngineering.add(coding);
+        modulesEngineering.add(maths);
+        modulesEngineering.add(hardware);
         
-        ArrayList<Module> moduleInfoTech = new ArrayList<>();
-        moduleInfoTech.add(coding);
-        moduleInfoTech.add(maths);
-        moduleInfoTech.add(webDesign);
+        ArrayList<Module> modulesInfoTech = new ArrayList<>();
+        modulesInfoTech.add(coding);
+        modulesInfoTech.add(maths);
+        modulesInfoTech.add(webDesign);
         
         //create courses
         Course engineering = new Course("Engineering", modulesEngineering, studentsEng, startDate, endDate);
         Course it = new Course("IT", modulesInfoTech, studentsIT, startDate, endDate);
         
+        ArrayList<Course> courses = new ArrayList<>();
+        courses.add(it);
+        courses.add(engineering);
         // the program should print out a list of all the courses, their respective modules,
         // and all students, their usernames, assigned modules and the course(s) they are registered
         // for to the console.
         // student can only do one course at a time, so no need to print student.getCourse()
         for(Course course: courses){
-            System.out.println("Course Name: " + course.getName());
-            for(Module module: course.getModules){
-                System.out.println("Associated Modules: " + module.getName());
-                System.out.println("Related Courses: " + module.getRelCourses());
+            System.out.println("\n\n\nCourse Name: " + course.getName());
+            System.out.println("\nAssociated Modules:");
+            for(Module module: course.getModules()){
+                System.out.println("\n" + module.getName() + ":");
+                System.out.println("\tRelated courses:");
+                for(String relCourse: module.getRelCourses()){
+                    System.out.println("\t\t" + relCourse);
+                }
             }
+
+            System.out.println();
             System.out.println("Students:");
             for(Student student: course.getStudents()){
-                System.out.println("Name: " + student.getName());
-                System.out.println("Username: " + student.getUserName());
-                System.out.println("Student's Modules:" + student.getModules());
+                System.out.println("\nName: " + student.getName());
+                System.out.println("Username: " + student.getUsername());
+                System.out.println("Student's Modules:");
+                for(String module:  student.getModules()){
+                    System.out.println("\t" + module.toString());
+                }
             }
         }
     }
