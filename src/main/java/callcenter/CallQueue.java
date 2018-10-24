@@ -4,6 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ *
+ * @author Colin Hanbury
+ */
 public class CallQueue
 {
 // ------------------------------ FIELDS ------------------------------
@@ -14,32 +18,33 @@ public class CallQueue
 
     private SimpleDateFormat formatter;
 
-    private LinkedBlockingQueue<Call> queue;
+    private LinkedBlockingQueue<ServiceAgent> queue;
+    //private LinkedBlockingQueue<Call> queue;
 
 // -------------------------- STATIC METHODS --------------------------
 
-    public static void queueCall( int duration )
+    public static void queueSalesAssistant( ServiceAgent salesAssistant )
     {
         try
         {
-            Call call = new Call( getInstance().counter++, duration );
-            log( "Queueing call " + call.getNumber() + " with a duration of " + call.getDuration() + " minutes" );
-            getInstance().queue.put( call );
+            //Call call = new Call( getInstance().counter++, duration );
+            log( "Queueing sales assistant: " + salesAssistant.getName());
+            getInstance().queue.put( salesAssistant );
         }
         catch ( InterruptedException e )
         {
-            log( "There was an error queueing the call" );
+            log( "There was an error making the sales assistant available to take the call." );
         }
     }
 
-    public static Call retrieveCall()
+    public static ServiceAgent retrieveSalesAssistant()
     {
-        Call call = getInstance().queue.poll();
-        if ( call != null )
+        ServiceAgent salesAssistant = getInstance().queue.poll();
+        if ( salesAssistant != null )
         {
-            log( "Retrieving call " + call.getNumber() );
+            log( "Connecting call to sales assistant: " + salesAssistant.getName() );
         }
-        return call;
+        return salesAssistant;
     }
 
     private static CallQueue getInstance()
@@ -60,7 +65,7 @@ public class CallQueue
 
     private CallQueue()
     {
-        this.queue = new LinkedBlockingQueue<Call>();
+        this.queue = new LinkedBlockingQueue<ServiceAgent>();
         this.counter = 1;
         this.formatter = new SimpleDateFormat( "HH:mm:ss" );
     }

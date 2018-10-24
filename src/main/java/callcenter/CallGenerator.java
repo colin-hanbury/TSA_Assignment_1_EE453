@@ -3,7 +3,12 @@ package callcenter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ *
+ * @author Colin Hanbury
+ */
 public class CallGenerator
     implements Runnable
 {
@@ -14,13 +19,25 @@ public class CallGenerator
     private Random random;
 
     private boolean running;
+        
+    private int callNumber;
+    
+    private double randomDouble;
+    
+    private AtomicInteger failure;
+    
+    private AtomicInteger total;
+    
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public CallGenerator()
-    {
+    public CallGenerator(int callNumber, AtomicInteger failure, AtomicInteger total, double randomDouble){
+        this.callNumber = callNumber;
         random = new Random();
         formatter = new SimpleDateFormat( "HH:mm:ss" );
+        this.failure = failure;
+        this.total = total;
+        this.randomDouble = randomDouble;
     }
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -32,13 +49,30 @@ public class CallGenerator
     {
         while ( running )
         {
-            int duration = random.nextInt( 5 );
-            if ( duration > 1 )
-            {
-                log( "Creando una llamada con una duracion de " + duration + " minutos" );
-                CallQueue.queueCall( duration );
-                sleep();
+            long startTime = random.nextInt(59)+1;
+            log( "Call No. " + callNumber + " is going to sleep for " + startTime + " minutes" );
+            sleep(startTime);
+            
+            log("Creating call No." + callNumber); //callNumber);            
+            ServiceAgent salesAssistant = CallQueue.retrieveSalesAssistant();
+
+            if(salesAssistant == null){
+                log("No sales assistant available for call No. " + callNumber);
+                failure.getAndIncrement();
+                log("Call No. " + callNumber + " failed!");
+                total.getAndIncrement();
+                break;
             }
+            
+            Call call = new Call(callNumber, randomDouble);
+            long duration = call.getDuration();
+            salesAssistant.setStatus(ServiceAgentStatus.IN_A_CALL);
+            sleep(duration);
+            log("Call No. " + callNumber + " was successful.");
+            log("Call No. " + callNumber +  " had a duration of: " + duration + " minutes");
+            total.getAndIncrement();
+            salesAssistant.setStatus(ServiceAgentStatus.FREE);
+            break;
         }
     }
 
@@ -52,6 +86,7 @@ public class CallGenerator
 
     public void stop()
     {
+        
         running = false;
     }
 
@@ -60,17 +95,17 @@ public class CallGenerator
         System.out.println( "[" + formatter.format( new Date() ) + "][CallGenerator] " + s );
     }
 
-    private void sleep()
+    //generates random start times
+    private void sleep(long sleep)
     {
         try
-        {
-            int sleep = random.nextInt( 2 * 60 );
-            //log( "going to sleep " + sleep + " seconds" );
-            Thread.sleep( sleep * 1000 );
+        {       
+            Thread.sleep( sleep );
         }
         catch ( InterruptedException e )
         {
             e.printStackTrace();
         }
     }
+    
 }

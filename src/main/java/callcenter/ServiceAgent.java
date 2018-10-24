@@ -3,26 +3,29 @@ package callcenter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ *
+ * @author Colin Hanbury
+ */
 public class ServiceAgent
     implements Runnable
 {
 // ------------------------------ FIELDS ------------------------------
 
-    private long callExpiration;
-
     private SimpleDateFormat formatter;
 
-    private int id;
+    private String name;
 
     private boolean running;
 
     private ServiceAgentStatus status;
+    
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public ServiceAgent( int id )
+    public ServiceAgent( String name )
     {
-        this.id = id;
+        this.name = name;
         this.status = ServiceAgentStatus.FREE;
         formatter = new SimpleDateFormat( "HH:mm:ss" );
     }
@@ -36,25 +39,17 @@ public class ServiceAgent
     {
         while ( running )
         {
-            if ( status == ServiceAgentStatus.FREE )
-            {
-                Call call = CallQueue.retrieveCall();
-                if ( call != null )
+            //lenght of experiment
+            long startTime = System.currentTimeMillis();
+            while(System.currentTimeMillis() < (startTime + 60)){
+                if ( status == ServiceAgentStatus.FREE )
                 {
-                    log( "Answering call " + call.getNumber() );
-                    callExpiration = System.currentTimeMillis() + ( call.getDuration() * 60 * 1000 );
-                    status = ServiceAgentStatus.IN_A_CALL;
+                    CallQueue.queueSalesAssistant(this);
+                    log( "Awaiting a call ");
+                    status = ServiceAgentStatus.WAITING_FOR_CALLS;
                 }
             }
-            else
-            {
-                if ( System.currentTimeMillis() > callExpiration )
-                {
-                    log( "hanging up" );
-                    status = ServiceAgentStatus.FREE;
-                }
-            }
-            sleep();
+            break;
         }
     }
 
@@ -73,18 +68,15 @@ public class ServiceAgent
 
     private void log( String s )
     {
-        System.out.println( "[" + formatter.format( new Date() ) + "][ServiceAgent][Agent " + id + "] " + s );
+        System.out.println( "[" + formatter.format( new Date() ) + "][ServiceAgent][Agent " + name + "] " + s );
     }
 
-    private void sleep()
-    {
-        try
-        {
-            Thread.sleep( 5000 );
-        }
-        catch ( InterruptedException e )
-        {
-            e.printStackTrace();
-        }
+
+    public String getName() {
+        return this.name;
+    }
+
+    void setStatus(ServiceAgentStatus newStatus) {
+            status  = newStatus;
     }
 }

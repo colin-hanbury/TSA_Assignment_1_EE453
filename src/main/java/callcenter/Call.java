@@ -2,27 +2,35 @@ package callcenter;
 
 import java.io.Serializable;
 
+/**
+ *
+ * @author Colin Hanbury
+ */
 public class Call
     implements Serializable
 {
 // ------------------------------ FIELDS ------------------------------
 
-    private int duration;
-
+    private long duration;
     private int number;
+    private double random;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public Call( int number, int duration )
+    public Call( int number, double random)
     {
+        this.random = random;
         this.number = number;
-        this.duration = duration;
     }
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public int getDuration()
+    public long getDuration()
     {
+        //System.out.println("Random number: " + random);
+        double exponential = ((Math.log(random)/(-1.2073))*30);
+        System.out.println("Exponential: " + exponential);
+        duration = (long) exponential;
         return duration;
     }
 
