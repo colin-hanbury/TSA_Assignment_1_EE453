@@ -15,7 +15,7 @@
         <dependency>
 	    <groupId>com.github.colin-hanbury</groupId>
 	    <artifactId>Assignment_1_CT_417_Part_A</artifactId>
-	    <version>version_1.3</version>
+	    <version>version_2.0</version>
 	</dependency>
         <dependency>
             <groupId>joda-time</groupId>
